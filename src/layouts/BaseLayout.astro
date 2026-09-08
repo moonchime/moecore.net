@@ -1,30 +1,34 @@
 ---
-import '../styles/global.css'
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import themeInit from "../scripts/theme-init.js?raw";
 const { title } = Astro.props;
 ---
-<html lang="zh-CN">
+<html lang="zh-CN" class="scheme-light dark:scheme-dark bg-background text-foreground">
   <head>
     <meta charset="utf-8" />
+    <script is:inline set:html={themeInit} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fontsapi.zeoseven.com" crossorigin />
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/670/main/result.css" />
-	<meta name="viewport" content="width=device-width" />
-	<meta name="generator" content={Astro.generator} />
-	<title>{title}</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
   </head>
   <body class="mx-auto flex min-h-dvh max-w-3xl flex-col">
     <Header />
-    <main class="flex flex-1 flex-col gap-4 border-y px-4 py-4">
+    <main class="flex flex-1 flex-col gap-4 border-y px-4 py-4 border-border">
       <h1 class="text-3xl font-bold">{title}</h1>
       <slot />
-      <div class="mt-auto space-y-4 text-right">
-        <p><em>萌核施工中　　　　　　　<br>Now Constructing…</em></p>
+      <div class="mt-auto space-y-4 text-right text-muted-foreground">
+        <p>
+          <em>萌核施工中　　　　　　　<br />Now Constructing…</em>
+        </p>
         <p><em>在此期间，可能会在网站上看到任何奇异的内容。</em></p>
       </div>
     </main>
-	<Footer />
+    <Footer />
   </body>
 </html>

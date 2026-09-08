@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  /* Preserve system dark mode when JavaScript is unavailable. */
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
+}
+
 @theme {
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  --color-muted-foreground: #575757;
+  --color-border: #808080;
+  --color-accent: #e02b60;
+
   --font-sans:
     "Frex Sans GB VF", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
@@ -10,5 +28,13 @@
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
+
+    @variant dark {
+      --color-background: #2d2a2e;
+      --color-foreground: #fcfcfa;
+      --color-muted-foreground: #c1c0c0;
+      --color-border: #939293;
+      --color-accent: #ff6188;
+    }
   }
 }

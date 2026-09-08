@@ -1,8 +1,26 @@
-<nav>
+---
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const links = [
+  { href: "/", label: "主页" },
+  { href: "/blog/", label: "博客" },
+  { href: "/about/", label: "关于" },
+  { href: "/friends/", label: "友链" },
+];
+---
+<nav aria-label="主导航">
   <ul class="flex gap-4">
-    <li><a href="/">主页</a></li>
-    <li><a href="/blog/">博客</a></li>
-    <li><a href="/about/">关于</a></li>
-    <li><a href="/friends/">友链</a></li>
+    {
+      links.map(({ href, label }) => (
+        <li>
+          <a
+            href={href}
+            aria-current={currentPath === (href.replace(/\/+$/, "") || "/") ? "page" : undefined}
+            class="hover:text-accent aria-[current=page]:text-accent aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            {label}
+          </a>
+        </li>
+      ))
+    }
   </ul>
 </nav>

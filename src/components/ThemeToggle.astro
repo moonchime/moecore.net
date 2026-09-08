@@ -1,0 +1,102 @@
+---
+import ThemeIcon from "./ThemeIcon.astro";
+const options = [
+  { value: "system", label: "跟随系统" },
+  { value: "light", label: "浅色" },
+  { value: "dark", label: "深色" },
+] as const;
+---
+<details id="theme-toggle" class="relative hidden">
+  <summary
+    aria-label="外观设置，当前：跟随系统"
+    class="flex size-11 cursor-pointer list-none items-center justify-center rounded hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2 dark:hover:bg-foreground/10 hover:text-accent focus-visible:outline-accent [&::-webkit-details-marker]:hidden"
+  >
+    {
+      options.map(({ value }) => (
+        <span data-theme-icon={value} class:list={{ hidden: value !== "system" }}>
+          <ThemeIcon name={value} />
+        </span>
+      ))
+    }
+  </summary>
+  <fieldset
+    class="absolute right-0 top-full z-10 mt-2 w-40 rounded border border-border bg-background p-1 text-foreground shadow-lg"
+  >
+    <legend class="sr-only">外观设置</legend>
+    {
+      options.map(({ value, label }) => (
+        <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded px-3 hover:bg-foreground/5 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-[-2px] dark:hover:bg-foreground/10 has-[:checked]:text-accent has-[:focus-visible]:outline-accent">
+          <input
+            class="peer sr-only"
+            type="radio"
+            name="theme-preference"
+            value={value}
+            checked={value === "system"}
+          />
+          <ThemeIcon name={value} />
+          <span class="flex-1">{label}</span>
+          <span class="invisible peer-checked:visible" aria-hidden="true">
+            ✓
+          </span>
+        </label>
+      ))
+    }
+  </fieldset>
+</details>
+
+<script>
+  const toggle = document.querySelector<HTMLDetailsElement>("#theme-toggle")!;
+  const trigger = toggle.querySelector("summary")!;
+  const inputs = toggle.querySelectorAll<HTMLInputElement>('input[name="theme-preference"]');
+  const labels: Record<string, string> = { system: "跟随系统", light: "浅色", dark: "深色" };
+
+  function sync() {
+    const preference = document.documentElement.dataset.themePreference || "system";
+    inputs.forEach((input) => {
+      input.checked = input.value === preference;
+    });
+    toggle.querySelectorAll<HTMLElement>("[data-theme-icon]").forEach((icon) => {
+      icon.classList.toggle("hidden", icon.dataset.themeIcon !== preference);
+    });
+    trigger.setAttribute("aria-label", `外观设置，当前：${labels[preference]}`);
+  }
+
+  function close() {
+    toggle.open = false;
+  }
+
+  toggle.addEventListener("change", (event) => {
+    const input = event.target;
+    if (input instanceof HTMLInputElement && input.checked) {
+      document.dispatchEvent(new CustomEvent("moecore:theme-select", { detail: input.value }));
+    }
+  });
+  // Let arrow keys traverse the radio group; close only after a pointer selection.
+  inputs.forEach((input) =>
+    input.addEventListener("click", (event) => {
+      if (event.detail > 0) {
+        requestAnimationFrame(() => {
+          close();
+          trigger.focus();
+        });
+      }
+    }),
+  );
+  toggle.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      close();
+      trigger.focus();
+    }
+  });
+  document.addEventListener("focusin", (event) => {
+    // Wait for focus to arrive elsewhere: label clicks can temporarily blur
+    // the summary before the browser activates the associated radio.
+    if (!toggle.contains(event.target as Node)) close();
+  });
+  document.addEventListener("click", (event) => {
+    if (!toggle.contains(event.target as Node)) close();
+  });
+  document.addEventListener("moecore:theme-updated", sync);
+  sync();
+  toggle.classList.remove("hidden");
+</script>
