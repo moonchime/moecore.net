@@ -1,0 +1,42 @@
+---
+interface Props {
+  title: string;
+  href: string;
+  description: string;
+  avatar?: string;
+}
+
+const { title, href, description, avatar } = Astro.props;
+---
+<div class="flex items-start gap-3 py-2">
+  {
+    avatar ? (
+      <img
+        src={avatar}
+        alt=""
+        width="44"
+        height="44"
+        loading="lazy"
+        decoding="async"
+        class="size-11 shrink-0 rounded-full object-cover"
+      />
+    ) : (
+      <span
+        aria-hidden="true"
+        class="flex size-11 shrink-0 items-center justify-center rounded-full bg-foreground/5 text-lg text-muted-foreground"
+      >
+        {Array.from(title)[0]}
+      </span>
+    )
+  }
+  <div class="min-w-0">
+    <a
+      href={href}
+      class="font-medium wrap-anywhere hover:text-accent focus-visible:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+    >
+      {title}
+    </a>
+    <span aria-hidden="true" class="ml-1 text-xs text-muted-foreground">↗</span>
+    <p class="mt-1 text-sm wrap-anywhere text-muted-foreground">{description}</p>
+  </div>
+</div>
