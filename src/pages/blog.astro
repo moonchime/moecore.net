@@ -1,6 +1,26 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+// getCollection() 不保证顺序，按发布日期从新到旧排
+const allPosts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 <BaseLayout title="千言万语">
   <p>“博客”页面，即将添加有趣的内容。</p>
+  <ul>
+    {
+      allPosts.map((post) => (
+        <li>
+          <a
+            href={`/posts/${post.id}/`}
+            class="hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            {post.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
 </BaseLayout>

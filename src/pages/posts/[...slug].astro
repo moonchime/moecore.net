@@ -1,0 +1,25 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+// YAML 日期按 UTC 零点解析，用 UTC 显示才不会因构建机时区差一天
+const pubDate = post.data.pubDate.toLocaleDateString("zh-CN", { timeZone: "UTC" });
+---
+<BaseLayout title={post.data.title}>
+  <p class="text-sm text-muted-foreground">
+    <time datetime={post.data.pubDate.toISOString()}>{pubDate}</time>{" · "}{post.data.author}
+  </p>
+  <p><em>{post.data.description}</em></p>
+  {post.data.image && <img src={post.data.image.url} width="300" alt={post.data.image.alt} />}
+  <Content />
+</BaseLayout>
